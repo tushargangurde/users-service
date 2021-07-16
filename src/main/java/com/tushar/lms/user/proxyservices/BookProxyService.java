@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.tushar.lms.user.dto.IssuedBookDto;
 
-@FeignClient(name = "books-service", fallback = FallbackBookProxyService.class)
+@FeignClient(name = "books-service", path = "/book", fallback = FallbackBookProxyService.class)
 public interface BookProxyService {
 
-	@GetMapping("/book/issuedBooks/{userId}")
+	@GetMapping("/issuedBooks/{userId}")
 	public ResponseEntity<List<IssuedBookDto>> getIssuedBooks(@PathVariable String userId);
 
 }
