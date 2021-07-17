@@ -13,8 +13,8 @@ import com.tushar.lms.user.dto.IssuedBookDto;
 import com.tushar.lms.user.dto.ResponseIssuedBooksForUser;
 import com.tushar.lms.user.dto.UserDto;
 import com.tushar.lms.user.entity.User;
-import com.tushar.lms.user.proxyservices.BookProxyService;
 import com.tushar.lms.user.repository.UserRepository;
+import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.service.UserService;
 
 @Service
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private BookProxyService bookProxyService;
+	private BookProxyServiceResilience bookProxyServiceResilience;
 
 	@Override
 	public UserDto addNewUser(UserDto addNewUser) {
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ResponseIssuedBooksForUser getIssuedBooksForUser(String userId) {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<IssuedBookDto> bookDtos = bookProxyService.getIssuedBooks(userId).getBody();
+		List<IssuedBookDto> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId).getBody();
 		UserDto user = getUser(userId);
 		ResponseIssuedBooksForUser issuedBooksForUser = modelMapper.map(user, ResponseIssuedBooksForUser.class);
 		issuedBooksForUser.setIssuedBookList(bookDtos);

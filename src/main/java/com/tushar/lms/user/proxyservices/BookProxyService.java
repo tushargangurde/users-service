@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.tushar.lms.user.dto.IssuedBookDto;
 
-@FeignClient(name = "books-service", path = "/book", fallback = FallbackBookProxyService.class)
+@FeignClient(name = "books-service", path = "/book")
 public interface BookProxyService {
 
 	@GetMapping("/issuedBooks/{userId}")
