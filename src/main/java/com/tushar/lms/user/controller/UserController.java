@@ -3,6 +3,7 @@ package com.tushar.lms.user.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Value("${service.test}")
+	private String test;
 
 	@PostMapping("/add")
 	public ResponseEntity<UserDto> addUser(@RequestBody UserDto addNewUser) {
@@ -45,5 +49,10 @@ public class UserController {
 	public ResponseEntity<ResponseIssuedBooksForUser> getIssuedBooksForUser(@PathVariable String userId) {
 		ResponseIssuedBooksForUser issuedBooksForUser = userService.getIssuedBooksForUser(userId);
 		return new ResponseEntity<ResponseIssuedBooksForUser>(issuedBooksForUser, HttpStatus.OK);
+	}
+
+	@GetMapping("/test")
+	public ResponseEntity<String> getProfiles() {
+		return new ResponseEntity<String>(test, HttpStatus.OK);
 	}
 }
