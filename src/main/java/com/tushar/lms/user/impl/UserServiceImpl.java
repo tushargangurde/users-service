@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +31,11 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private BookProxyServiceResilience bookProxyServiceResilience;
 
+	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
 	@Override
 	public UserDto addNewUser(UserDto addNewUser) {
+		logger.info("Inside UserServiceImpl ---------> addNewUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		User newUser = modelMapper.map(addNewUser, User.class);
 		newUser.setUserId(UUID.randomUUID().toString());
@@ -41,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserDto> getAllUsers() {
+		logger.info("Inside UserServiceImpl ---------> getAllUsers");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<User> users = userRepository.findAll();
 		List<UserDto> userDtos = users.stream().map(user -> modelMapper.map(user, UserDto.class))
@@ -50,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUser(String userId) {
+		logger.info("Inside UserServiceImpl ---------> getUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		User found = userRepository.findByUserId(userId);
 		UserDto userFound = modelMapper.map(found, UserDto.class);
@@ -58,6 +65,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ResponseIssuedBooksForUser getIssuedBooksForUser(String userId) {
+		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<IssuedBookDto> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId).getBody();
 		UserDto user = getUser(userId);

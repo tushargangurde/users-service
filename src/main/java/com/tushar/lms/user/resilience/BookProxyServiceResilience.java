@@ -27,8 +27,10 @@ public class BookProxyServiceResilience {
 
 	@CircuitBreaker(name = "books-service", fallbackMethod = "fallbackGetIssuedBooks")
 	public ResponseEntity<List<IssuedBookDto>> getIssuedBooks(String userId) {
+		logger.info("Inside BookProxyServiceResilience ---------> getIssuedBooks");
 		logger.info("count=" + count);
 		count++;
+		logger.info("Calling bookProxyService.getIssuedBooks");
 		return bookProxyService.getIssuedBooks(userId);
 	}
 
