@@ -1,5 +1,6 @@
 package com.tushar.lms.user.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -9,12 +10,16 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tushar.lms.user.dto.IssuedBookDto;
 import com.tushar.lms.user.dto.ResponseIssuedBooksForUser;
 import com.tushar.lms.user.dto.UserDto;
-import com.tushar.lms.user.entity.User;
+import com.tushar.lms.user.entity.UserEntity;
 import com.tushar.lms.user.repository.UserRepository;
 import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.service.UserService;
@@ -29,6 +34,9 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+
+	@Autowired
 	private BookProxyServiceResilience bookProxyServiceResilience;
 
 	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -36,10 +44,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto addNewUser(UserDto addNewUser) {
 		logger.info("Inside UserServiceImpl ---------> addNewUser");
+		addNewUser.setUserId(UUID.randomUUID().toString());
+		addNewUser.setPassword(passwordEncoder.encode(addNewUser.getPassword()));
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		User newUser = modelMapper.map(addNewUser, User.class);
-		newUser.setUserId(UUID.randomUUID().toString());
-		User savedUser = userRepository.save(newUser);
+		UserEntity newUser = modelMapper.map(addNewUser, UserEntity.class);
+		UserEntity savedUser = userRepository.save(newUser);
 		UserDto returnUser = modelMapper.map(savedUser, UserDto.class);
 		return returnUser;
 	}
@@ -48,7 +57,7 @@ public class UserServiceImpl implements UserService {
 	public List<UserDto> getAllUsers() {
 		logger.info("Inside UserServiceImpl ---------> getAllUsers");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<User> users = userRepository.findAll();
+		List<UserEntity> users = userRepository.findAll();
 		List<UserDto> userDtos = users.stream().map(user -> modelMapper.map(user, UserDto.class))
 				.collect(Collectors.toList());
 		return userDtos;
@@ -58,7 +67,7 @@ public class UserServiceImpl implements UserService {
 	public UserDto getUser(String userId) {
 		logger.info("Inside UserServiceImpl ---------> getUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		User found = userRepository.findByUserId(userId);
+		UserEntity found = userRepository.findByUserId(userId);
 		UserDto userFound = modelMapper.map(found, UserDto.class);
 		return userFound;
 	}
@@ -74,4 +83,29 @@ public class UserServiceImpl implements UserService {
 		return issuedBooksForUser;
 	}
 
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		logger.info("Inside UserServiceImpl ---------> loadUserByUsername");
+		UserEntity userEntity = userRepository.findByEmail(username);
+
+		if (userEntity == null)
+			throw new UsernameNotFoundException("User not available " + username);
+
+		logger.info("Email:" + userEntity.getEmail());
+
+		return new User(userEntity.getEmail(), userEntity.getPassword(), true, true, true, true, new ArrayList<>());
+	}
+
+	@Override
+	public UserDto getUserDetailsByEmail(String email) {
+		logger.info("Inside UserServiceImpl ---------> getUserDetailsByEmail");
+		UserEntity userEntity = userRepository.findByEmail(email);
+
+		if (userEntity == null)
+			throw new UsernameNotFoundException("User not available " + email);
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		UserDto userDto = modelMapper.map(userEntity, UserDto.class);
+
+		return userDto;
+	}
 }

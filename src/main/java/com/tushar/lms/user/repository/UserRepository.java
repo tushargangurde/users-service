@@ -2,10 +2,12 @@ package com.tushar.lms.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tushar.lms.user.entity.User;
+import com.tushar.lms.user.entity.UserEntity;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-	User findByUserId(String userId);
+	UserEntity findByUserId(String userId);
+	
+	UserEntity findByEmail(String email);
 
 }
