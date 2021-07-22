@@ -1,14 +1,17 @@
-package com.tushar.lms.user.dto;
+package com.tushar.lms.user.responsemodel;
 
-public class UserDto {
+import java.util.List;
+
+import com.tushar.lms.user.dto.IssuedBookDto;
+
+public class ResponseIssuedBooksForUser {
 
 	private String userId;
 	private String fullname;
 	private String address;
 	private String email;
-	private String password;
-
 	private Long contactNo;
+	private List<IssuedBookDto> issuedBookList;
 
 	public String getUserId() {
 		return userId;
@@ -50,18 +53,11 @@ public class UserDto {
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return password;
+	public List<IssuedBookDto> getIssuedBookList() {
+		return issuedBookList;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setIssuedBookList(List<IssuedBookDto> issuedBookList) {
+		this.issuedBookList = issuedBookList;
 	}
-
-	@Override
-	public String toString() {
-		return "UserDto [userId=" + userId + ", fullname=" + fullname + ", address=" + address + ", contactNo="
-				+ contactNo + ", email=" + email + ", password=" + password + "]";
-	}
-
 }

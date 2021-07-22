@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tushar.lms.user.dto.ResponseIssuedBooksForUser;
-import com.tushar.lms.user.dto.UserDto;
+import com.tushar.lms.user.requestmodel.NewUserRequest;
+import com.tushar.lms.user.responsemodel.AllUsersListResponse;
+import com.tushar.lms.user.responsemodel.GetUserResponse;
+import com.tushar.lms.user.responsemodel.NewUserResponse;
+import com.tushar.lms.user.responsemodel.ResponseIssuedBooksForUser;
 import com.tushar.lms.user.service.UserService;
 
 @RestController
@@ -32,31 +35,31 @@ public class UserController {
 	Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	@PostMapping("/add")
-	public ResponseEntity<UserDto> addUser(@RequestBody UserDto addNewUser) {
+	public ResponseEntity<NewUserResponse> addUser(@RequestBody NewUserRequest addNewUser) {
 		logger.info("Inside UserController ---------> addUser");
-		UserDto newUser = userService.addNewUser(addNewUser);
-		return new ResponseEntity<UserDto>(newUser, HttpStatus.CREATED);
+		NewUserResponse newUser = userService.addNewUser(addNewUser);
+		return new ResponseEntity<NewUserResponse>(newUser, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/getAll")
-	public ResponseEntity<List<UserDto>> getAllUsers() {
+	public ResponseEntity<List<AllUsersListResponse>> getAllUsers() {
 		logger.info("Inside UserController ---------> getAllUsers");
-		List<UserDto> allUsers = userService.getAllUsers();
-		return new ResponseEntity<List<UserDto>>(allUsers, HttpStatus.FOUND);
+		List<AllUsersListResponse> allUsers = userService.getAllUsers();
+		return new ResponseEntity<List<AllUsersListResponse>>(allUsers, HttpStatus.FOUND);
 	}
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
+	public ResponseEntity<GetUserResponse> getUser(@PathVariable String userId) {
 		logger.info("Inside UserController ---------> getUser");
-		UserDto user = userService.getUser(userId);
-		return new ResponseEntity<UserDto>(user, HttpStatus.FOUND);
+		GetUserResponse user = userService.getUser(userId);
+		return new ResponseEntity<GetUserResponse>(user, HttpStatus.FOUND);
 	}
 
 	@GetMapping("/getBooksForUser/{userId}")
 	public ResponseEntity<ResponseIssuedBooksForUser> getIssuedBooksForUser(@PathVariable String userId) {
 		logger.info("Inside UserController ---------> getIssuedBooksForUser");
 		ResponseIssuedBooksForUser issuedBooksForUser = userService.getIssuedBooksForUser(userId);
-		return new ResponseEntity<ResponseIssuedBooksForUser>(issuedBooksForUser, HttpStatus.OK);
+		return new ResponseEntity<ResponseIssuedBooksForUser>(issuedBooksForUser, HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/test")

@@ -19,8 +19,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tushar.lms.user.dto.LoginRequestDto;
-import com.tushar.lms.user.dto.UserDto;
+import com.tushar.lms.user.requestmodel.LoginRequestDto;
+import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.service.UserService;
 
 import io.jsonwebtoken.Jwts;
@@ -58,10 +58,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		String username = ((User) authResult.getPrincipal()).getUsername();
 		logger.info("Inside AuthenticationFilter ---------> successfulAuthentication");
 		logger.info("Username:" + username);
-		UserDto userDetails = userService.getUserDetailsByEmail(username);
+		GetUserResponse userDetails = userService.getUserDetailsByEmail(username);
 
 		String token = Jwts.builder().setSubject(userDetails.getUserId())
-				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("300000")))
+				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("3000000")))
 				.signWith(SignatureAlgorithm.HS512, "secret_key").compact();
 
 		response.addHeader("token", token);

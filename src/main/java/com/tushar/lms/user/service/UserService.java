@@ -4,19 +4,22 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.tushar.lms.user.dto.ResponseIssuedBooksForUser;
-import com.tushar.lms.user.dto.UserDto;
+import com.tushar.lms.user.requestmodel.NewUserRequest;
+import com.tushar.lms.user.responsemodel.AllUsersListResponse;
+import com.tushar.lms.user.responsemodel.GetUserResponse;
+import com.tushar.lms.user.responsemodel.NewUserResponse;
+import com.tushar.lms.user.responsemodel.ResponseIssuedBooksForUser;
 
 public interface UserService extends UserDetailsService{
 
-	UserDto addNewUser(UserDto addNewUser);
+	NewUserResponse addNewUser(NewUserRequest addNewUser);
 
-	List<UserDto> getAllUsers();
+	List<AllUsersListResponse> getAllUsers();
 
-	UserDto getUser(String userId);
+	GetUserResponse getUser(String userId);
 
 	ResponseIssuedBooksForUser getIssuedBooksForUser(String userId);
 	
-	UserDto getUserDetailsByEmail(String email);
+	GetUserResponse getUserDetailsByEmail(String email);
 
 }

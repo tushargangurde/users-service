@@ -1,4 +1,4 @@
-package com.tushar.lms.user.dto;
+package com.tushar.lms.user.requestmodel;
 
 public class LoginRequestDto {
 
