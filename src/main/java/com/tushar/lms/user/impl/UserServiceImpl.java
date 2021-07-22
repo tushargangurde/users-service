@@ -58,8 +58,10 @@ public class UserServiceImpl implements UserService {
 		logger.info("Inside UserServiceImpl ---------> getAllUsers");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<UserEntity> users = userRepository.findAll();
+		logger.info(users.toString());
 		List<UserDto> userDtos = users.stream().map(user -> modelMapper.map(user, UserDto.class))
 				.collect(Collectors.toList());
+		logger.info(userDtos.toString());
 		return userDtos;
 	}
 
@@ -103,6 +105,7 @@ public class UserServiceImpl implements UserService {
 
 		if (userEntity == null)
 			throw new UsernameNotFoundException("User not available " + email);
+		
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserDto userDto = modelMapper.map(userEntity, UserDto.class);
 

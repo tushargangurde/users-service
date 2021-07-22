@@ -5,9 +5,10 @@ public class UserDto {
 	private String userId;
 	private String fullname;
 	private String address;
-	private long contactNo;
 	private String email;
 	private String password;
+
+	private Long contactNo;
 
 	public String getUserId() {
 		return userId;
@@ -33,11 +34,11 @@ public class UserDto {
 		this.address = address;
 	}
 
-	public long getContactNo() {
+	public Long getContactNo() {
 		return contactNo;
 	}
 
-	public void setContactNo(long contactNo) {
+	public void setContactNo(Long contactNo) {
 		this.contactNo = contactNo;
 	}
 
@@ -45,7 +46,7 @@ public class UserDto {
 		return email;
 	}
 
-	public void setUsername(String email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 
@@ -55,6 +56,12 @@ public class UserDto {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "UserDto [userId=" + userId + ", fullname=" + fullname + ", address=" + address + ", contactNo="
+				+ contactNo + ", email=" + email + ", password=" + password + "]";
 	}
 
 }

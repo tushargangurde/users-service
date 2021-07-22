@@ -7,7 +7,8 @@ public class ResponseIssuedBooksForUser {
 	private String userId;
 	private String fullname;
 	private String address;
-	private long contactNo;
+	private String email;
+	private Long contactNo;
 	private List<IssuedBookDto> issuedBookList;
 
 	public String getUserId() {
@@ -34,12 +35,20 @@ public class ResponseIssuedBooksForUser {
 		this.address = address;
 	}
 
-	public long getContactNo() {
+	public Long getContactNo() {
 		return contactNo;
 	}
 
-	public void setContactNo(long contactNo) {
+	public void setContactNo(Long contactNo) {
 		this.contactNo = contactNo;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public List<IssuedBookDto> getIssuedBookList() {

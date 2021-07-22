@@ -15,14 +15,14 @@ public class UserEntity {
 	private String userId;
 	private String fullname;
 	private String address;
-	private long contactNo;
 	private String email;
 	private String password;
+	private Long contactNo;
 
 	public UserEntity() {
 	}
 
-	public UserEntity(int id, String userId, String fullname, String address, long contactNo, String email,
+	public UserEntity(int id, String userId, String fullname, String address, Long contactNo, String email,
 			String password) {
 		this.id = id;
 		this.userId = userId;
@@ -65,11 +65,11 @@ public class UserEntity {
 		this.address = address;
 	}
 
-	public long getContactNo() {
+	public Long getContactNo() {
 		return contactNo;
 	}
 
-	public void setContactNo(long contactNo) {
+	public void setContactNo(Long contactNo) {
 		this.contactNo = contactNo;
 	}
 
@@ -87,6 +87,12 @@ public class UserEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "UserEntity [id=" + id + ", userId=" + userId + ", fullname=" + fullname + ", address=" + address
+				+ ", contactNo=" + contactNo + ", email=" + email + ", password=" + password + "]";
 	}
 
 }
