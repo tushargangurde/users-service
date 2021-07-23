@@ -8,6 +8,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,5 +45,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				"Something went wrong", exception.getMessage());
 		return new ResponseEntity<ApiErrorResponse>(apiErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(CustomJwtException.class)
+	public ResponseEntity<ApiErrorResponse> handleCustomJwtException(CustomJwtException exception) {
+		logger.info("GlobalExceptionHandler --------------------> handleCustomJwtException");
+		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.UNAUTHORIZED.value(),
+				"JWT related exception", exception.getMessage());
+		return new ResponseEntity<ApiErrorResponse>(apiErrorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
+		logger.info("GlobalExceptionHandler --------------------> handleAccessDeniedException");
+		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Unauthorized",
+				exception.getMessage());
+		return new ResponseEntity<ApiErrorResponse>(apiErrorResponse, HttpStatus.UNAUTHORIZED);
 	}
 }
