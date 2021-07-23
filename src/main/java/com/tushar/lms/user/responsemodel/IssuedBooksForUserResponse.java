@@ -2,16 +2,14 @@ package com.tushar.lms.user.responsemodel;
 
 import java.util.List;
 
-import com.tushar.lms.user.dto.IssuedBookDto;
-
-public class ResponseIssuedBooksForUser {
+public class IssuedBooksForUserResponse {
 
 	private String userId;
 	private String fullname;
 	private String address;
 	private String email;
 	private Long contactNo;
-	private List<IssuedBookDto> issuedBookList;
+	private List<IssuedBookResponse> issuedBookList;
 
 	public String getUserId() {
 		return userId;
@@ -53,11 +51,11 @@ public class ResponseIssuedBooksForUser {
 		this.email = email;
 	}
 
-	public List<IssuedBookDto> getIssuedBookList() {
+	public List<IssuedBookResponse> getIssuedBookList() {
 		return issuedBookList;
 	}
 
-	public void setIssuedBookList(List<IssuedBookDto> issuedBookList) {
+	public void setIssuedBookList(List<IssuedBookResponse> issuedBookList) {
 		this.issuedBookList = issuedBookList;
 	}
 }

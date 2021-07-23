@@ -1,12 +1,12 @@
-package com.tushar.lms.user.dto;
+package com.tushar.lms.user.responsemodel;
 
-public class IssuedBookDto {
+public class IssuedBookResponse {
 
 	private String bookId;
 	private String bookName;
 	private String author;
 
-	public IssuedBookDto(String bookId, String bookName, String author) {
+	public IssuedBookResponse(String bookId, String bookName, String author) {
 		this.bookId = bookId;
 		this.bookName = bookName;
 		this.author = author;

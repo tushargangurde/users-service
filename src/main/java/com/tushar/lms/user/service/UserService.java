@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.tushar.lms.user.requestmodel.NewBookRequest;
 import com.tushar.lms.user.requestmodel.NewUserRequest;
 import com.tushar.lms.user.responsemodel.AllUsersListResponse;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
+import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
-import com.tushar.lms.user.responsemodel.ResponseIssuedBooksForUser;
+import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 
 public interface UserService extends UserDetailsService{
 
@@ -18,8 +20,10 @@ public interface UserService extends UserDetailsService{
 
 	GetUserResponse getUser(String userId);
 
-	ResponseIssuedBooksForUser getIssuedBooksForUser(String userId);
+	IssuedBooksForUserResponse getIssuedBooksForUser(String userId);
 	
 	GetUserResponse getUserDetailsByEmail(String email);
+
+	NewBookResponse addNewBook(NewBookRequest newBookRequest);
 
 }

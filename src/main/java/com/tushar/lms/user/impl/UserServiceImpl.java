@@ -16,15 +16,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.tushar.lms.user.dto.IssuedBookDto;
 import com.tushar.lms.user.entity.UserEntity;
 import com.tushar.lms.user.repository.UserRepository;
+import com.tushar.lms.user.requestmodel.NewBookRequest;
 import com.tushar.lms.user.requestmodel.NewUserRequest;
 import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.responsemodel.AllUsersListResponse;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
+import com.tushar.lms.user.responsemodel.IssuedBookResponse;
+import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
-import com.tushar.lms.user.responsemodel.ResponseIssuedBooksForUser;
+import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 import com.tushar.lms.user.service.UserService;
 
 @Service
@@ -76,12 +78,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseIssuedBooksForUser getIssuedBooksForUser(String userId) {
+	public IssuedBooksForUserResponse getIssuedBooksForUser(String userId) {
 		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<IssuedBookDto> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId).getBody();
+		List<IssuedBookResponse> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId).getBody();
 		GetUserResponse user = getUser(userId);
-		ResponseIssuedBooksForUser issuedBooksForUser = modelMapper.map(user, ResponseIssuedBooksForUser.class);
+		IssuedBooksForUserResponse issuedBooksForUser = modelMapper.map(user, IssuedBooksForUserResponse.class);
 		issuedBooksForUser.setIssuedBookList(bookDtos);
 		return issuedBooksForUser;
 	}
@@ -111,5 +113,13 @@ public class UserServiceImpl implements UserService {
 		GetUserResponse getUserResponse = modelMapper.map(userEntity, GetUserResponse.class);
 
 		return getUserResponse;
+	}
+
+	@Override
+	public NewBookResponse addNewBook(NewBookRequest newBookRequest) {
+		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		NewBookResponse response = bookProxyServiceResilience.addNewBook(newBookRequest).getBody();
+		return response;
 	}
 }

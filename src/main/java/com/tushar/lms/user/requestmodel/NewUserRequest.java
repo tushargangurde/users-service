@@ -1,12 +1,26 @@
 package com.tushar.lms.user.requestmodel;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class NewUserRequest {
 
 	private String userId;
+	@NotEmpty(message = "Fullname required")
+	@Size(min = 6, message = "fullname at least has 6 characters")
 	private String fullname;
+	@NotEmpty(message = "address required")
+	@Size(min = 6, message = "fullname at least has 6 characters")
 	private String address;
+	@NotEmpty(message = "email required")
+	@Email
 	private String email;
+	@NotEmpty(message = "password required")
+	@Size(min = 6, message = "password at least has 6 characters")
 	private String password;
+	@NotNull(message = "contact no should not be null")
 	private Long contactNo;
 
 	public String getUserId() {
