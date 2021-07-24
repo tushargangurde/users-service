@@ -40,6 +40,7 @@ public class UserController {
 	Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	@PostMapping("/add")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<NewUserResponse> addUser(@Valid @RequestBody NewUserRequest addNewUser) {
 		logger.info("Inside UserController ---------> addUser");
 		NewUserResponse newUser = userService.addNewUser(addNewUser);
@@ -47,6 +48,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getAll")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<List<AllUsersListResponse>> getAllUsers() {
 		logger.info("Inside UserController ---------> getAllUsers");
 		List<AllUsersListResponse> allUsers = userService.getAllUsers();
@@ -54,7 +56,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{userId}")
-	@PreAuthorize("principal == #userId")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN') or principal == #userId")
 	public ResponseEntity<GetUserResponse> getUser(@PathVariable String userId) {
 		logger.info("Inside UserController ---------> getUser");
 		GetUserResponse user = userService.getUser(userId);
@@ -62,6 +64,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getBooksForUser/{userId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<IssuedBooksForUserResponse> getIssuedBooksForUser(@PathVariable String userId) {
 		logger.info("Inside UserController ---------> getIssuedBooksForUser");
 		IssuedBooksForUserResponse issuedBooksForUser = userService.getIssuedBooksForUser(userId);
@@ -75,6 +78,7 @@ public class UserController {
 	}
 
 	@PostMapping("/addNewBook")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<NewBookResponse> addNewBook(@Valid @RequestBody NewBookRequest newBookRequest) {
 		logger.info("Inside UserController ---------> addNewBook");
 		NewBookResponse bookResponse = userService.addNewBook(newBookRequest);

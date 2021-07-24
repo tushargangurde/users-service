@@ -7,6 +7,7 @@ public class GetUserResponse {
 	private String address;
 	private String email;
 	private Long contactNo;
+	private String role;
 
 	public String getUserId() {
 		return userId;
@@ -46,6 +47,14 @@ public class GetUserResponse {
 
 	public void setContactNo(Long contactNo) {
 		this.contactNo = contactNo;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

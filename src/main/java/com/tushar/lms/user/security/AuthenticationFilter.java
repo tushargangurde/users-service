@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tushar.lms.user.impl.CustomUserDetails;
 import com.tushar.lms.user.requestmodel.LoginRequestDto;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.service.UserService;
@@ -55,17 +55,21 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 
-		String username = ((User) authResult.getPrincipal()).getUsername();
+		String username = ((CustomUserDetails) authResult.getPrincipal()).getUsername();
 		logger.info("Inside AuthenticationFilter ---------> successfulAuthentication");
 		logger.info("Username:" + username);
 		GetUserResponse userDetails = userService.getUserDetailsByEmail(username);
+		
+		String userId=userDetails.getUserId();
 
-		String token = Jwts.builder().setSubject(userDetails.getUserId())
+		String token = Jwts.builder().setSubject(userId)
 				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("3000000")))
 				.signWith(SignatureAlgorithm.HS512, "secret_key").compact();
+		
+		logger.info("User ID:"+userId);
 
 		response.addHeader("token", token);
-		response.addHeader("userId", userDetails.getUserId());
+		response.addHeader("userId", userId);
 
 	}
 

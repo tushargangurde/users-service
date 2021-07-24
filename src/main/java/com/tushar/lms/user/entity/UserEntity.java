@@ -18,12 +18,13 @@ public class UserEntity {
 	private String email;
 	private String password;
 	private Long contactNo;
+	private String role;
 
 	public UserEntity() {
 	}
 
 	public UserEntity(int id, String userId, String fullname, String address, Long contactNo, String email,
-			String password) {
+			String password, String role) {
 		this.id = id;
 		this.userId = userId;
 		this.fullname = fullname;
@@ -31,6 +32,7 @@ public class UserEntity {
 		this.contactNo = contactNo;
 		this.email = email;
 		this.password = password;
+		this.role = role;
 	}
 
 	public int getId() {
@@ -89,10 +91,12 @@ public class UserEntity {
 		this.password = password;
 	}
 
-	@Override
-	public String toString() {
-		return "UserEntity [id=" + id + ", userId=" + userId + ", fullname=" + fullname + ", address=" + address
-				+ ", contactNo=" + contactNo + ", email=" + email + ", password=" + password + "]";
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

@@ -1,7 +1,7 @@
 package com.tushar.lms.user.impl;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -10,7 +10,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,9 +23,9 @@ import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.responsemodel.AllUsersListResponse;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.responsemodel.IssuedBookResponse;
+import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
-import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 import com.tushar.lms.user.service.UserService;
 
 @Service
@@ -53,6 +52,7 @@ public class UserServiceImpl implements UserService {
 		addNewUser.setPassword(passwordEncoder.encode(addNewUser.getPassword()));
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserEntity newUser = modelMapper.map(addNewUser, UserEntity.class);
+		newUser.setRole("ROLE_USER");
 		UserEntity savedUser = userRepository.save(newUser);
 		NewUserResponse returnUser = modelMapper.map(savedUser, NewUserResponse.class);
 		return returnUser;
@@ -91,26 +91,25 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		logger.info("Inside UserServiceImpl ---------> loadUserByUsername");
-		UserEntity userEntity = userRepository.findByEmail(username);
+		Optional<UserEntity> userEntity = userRepository.findByEmail(username);
 
-		if (userEntity == null)
+		if (userEntity.isEmpty())
 			throw new UsernameNotFoundException("User not available " + username);
 
-		logger.info("Email:" + userEntity.getEmail());
+		return new CustomUserDetails(userEntity.get());
 
-		return new User(userEntity.getEmail(), userEntity.getPassword(), true, true, true, true, new ArrayList<>());
 	}
 
 	@Override
 	public GetUserResponse getUserDetailsByEmail(String email) {
 		logger.info("Inside UserServiceImpl ---------> getUserDetailsByEmail");
-		UserEntity userEntity = userRepository.findByEmail(email);
+		Optional<UserEntity> userEntity = userRepository.findByEmail(email);
 
-		if (userEntity == null)
+		if (userEntity.isEmpty())
 			throw new UsernameNotFoundException("User not available " + email);
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		GetUserResponse getUserResponse = modelMapper.map(userEntity, GetUserResponse.class);
+		GetUserResponse getUserResponse = modelMapper.map(userEntity.get(), GetUserResponse.class);
 
 		return getUserResponse;
 	}
