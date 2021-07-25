@@ -20,9 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.tushar.lms.user.exception.CustomJwtException;
-import com.tushar.lms.user.responsemodel.GetUserResponse;
-import com.tushar.lms.user.service.UserService;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
@@ -30,11 +29,8 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 
 	Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
-	private UserService userService;
-
-	public AuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
+	public AuthorizationFilter(AuthenticationManager authenticationManager) {
 		super(authenticationManager);
-		this.userService = userService;
 	}
 
 	@Override
@@ -65,15 +61,21 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 			String userId = null;
 			String token = authorizationHeader.replace("Bearer ", "");
 
-			userId = Jwts.parser().setSigningKey("secret_key").parseClaimsJws(token).getBody().getSubject();
+			Claims body = Jwts.parser().setSigningKey("secret_key").parseClaimsJws(token).getBody();
+
+			// userId =
+			// Jwts.parser().setSigningKey("secret_key").parseClaimsJws(token).getBody().getSubject();
+
+			userId = body.getSubject();
+			String role = (String) body.get("role");
 
 			if (userId == null) {
 				return null;
 			}
 
-			GetUserResponse userResponse = userService.getUser(userId);
-			List<GrantedAuthority> authorities = Arrays.stream(userResponse.getRole().split(","))
-					.map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+			// GetUserResponse userResponse = userService.getUser(userId);
+			List<GrantedAuthority> authorities = Arrays.stream(role.split(",")).map(SimpleGrantedAuthority::new)
+					.collect(Collectors.toList());
 
 			return new UsernamePasswordAuthenticationToken(userId, null, authorities);
 		} catch (JwtException exception) {

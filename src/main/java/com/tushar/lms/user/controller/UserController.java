@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,10 +65,11 @@ public class UserController {
 	}
 
 	@GetMapping("/getBooksForUser/{userId}")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-	public ResponseEntity<IssuedBooksForUserResponse> getIssuedBooksForUser(@PathVariable String userId) {
+	@PreAuthorize("hasAuthority('ROLE_ADMIN') or principal == #userId")
+	public ResponseEntity<IssuedBooksForUserResponse> getIssuedBooksForUser(@PathVariable String userId,
+			@RequestHeader String Authorization) {
 		logger.info("Inside UserController ---------> getIssuedBooksForUser");
-		IssuedBooksForUserResponse issuedBooksForUser = userService.getIssuedBooksForUser(userId);
+		IssuedBooksForUserResponse issuedBooksForUser = userService.getIssuedBooksForUser(userId, Authorization);
 		return new ResponseEntity<IssuedBooksForUserResponse>(issuedBooksForUser, HttpStatus.ACCEPTED);
 	}
 

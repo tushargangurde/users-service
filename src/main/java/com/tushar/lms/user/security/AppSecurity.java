@@ -25,7 +25,7 @@ public class AppSecurity extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
 		http.authorizeRequests().antMatchers("/user/add").permitAll().anyRequest().authenticated().and()
-				.addFilter(getAuthenticationFilter()).addFilter(new AuthorizationFilter(authenticationManager(),userService));
+				.addFilter(getAuthenticationFilter()).addFilter(new AuthorizationFilter(authenticationManager()));
 
 	}
 

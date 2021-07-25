@@ -28,15 +28,16 @@ public class BookProxyServiceResilience {
 	long count = 1;
 
 	@CircuitBreaker(name = "books-service", fallbackMethod = "fallbackGetIssuedBooks")
-	public ResponseEntity<List<IssuedBookResponse>> getIssuedBooks(String userId) {
+	public ResponseEntity<List<IssuedBookResponse>> getIssuedBooks(String userId, String Authorization) {
 		logger.info("Inside BookProxyServiceResilience ---------> getIssuedBooks");
 		logger.info("count=" + count);
 		count++;
 		logger.info("Calling bookProxyService.getIssuedBooks");
-		return bookProxyService.getIssuedBooks(userId);
+		return bookProxyService.getIssuedBooks(userId, Authorization);
 	}
 
-	public ResponseEntity<List<IssuedBookResponse>> fallbackGetIssuedBooks(String userId, Throwable th) {
+	public ResponseEntity<List<IssuedBookResponse>> fallbackGetIssuedBooks(String userId, String Authorization,
+			Throwable th) {
 		logger.error("Error:" + th.getMessage());
 		List<IssuedBookResponse> bookDtos = new ArrayList<>();
 		return new ResponseEntity<List<IssuedBookResponse>>(bookDtos, HttpStatus.BAD_GATEWAY);

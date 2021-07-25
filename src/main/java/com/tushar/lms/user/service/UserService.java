@@ -12,7 +12,7 @@ import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
 import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 
-public interface UserService extends UserDetailsService{
+public interface UserService extends UserDetailsService {
 
 	NewUserResponse addNewUser(NewUserRequest addNewUser);
 
@@ -20,8 +20,8 @@ public interface UserService extends UserDetailsService{
 
 	GetUserResponse getUser(String userId);
 
-	IssuedBooksForUserResponse getIssuedBooksForUser(String userId);
-	
+	IssuedBooksForUserResponse getIssuedBooksForUser(String userId, String Authorization);
+
 	GetUserResponse getUserDetailsByEmail(String email);
 
 	NewBookResponse addNewBook(NewBookRequest newBookRequest);

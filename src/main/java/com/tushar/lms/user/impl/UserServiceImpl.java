@@ -78,10 +78,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public IssuedBooksForUserResponse getIssuedBooksForUser(String userId) {
+	public IssuedBooksForUserResponse getIssuedBooksForUser(String userId, String Authorization) {
 		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<IssuedBookResponse> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId).getBody();
+		List<IssuedBookResponse> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId, Authorization).getBody();
 		GetUserResponse user = getUser(userId);
 		IssuedBooksForUserResponse issuedBooksForUser = modelMapper.map(user, IssuedBooksForUserResponse.class);
 		issuedBooksForUser.setIssuedBookList(bookDtos);

@@ -23,6 +23,7 @@ import com.tushar.lms.user.requestmodel.LoginRequestDto;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.service.UserService;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -59,14 +60,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		logger.info("Inside AuthenticationFilter ---------> successfulAuthentication");
 		logger.info("Username:" + username);
 		GetUserResponse userDetails = userService.getUserDetailsByEmail(username);
-		
-		String userId=userDetails.getUserId();
 
-		String token = Jwts.builder().setSubject(userId)
+		String userId = userDetails.getUserId();
+
+		Claims claims = Jwts.claims().setSubject(userId);
+		claims.put("role", userDetails.getRole());
+
+		String token = Jwts.builder().setClaims(claims)
 				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("3000000")))
 				.signWith(SignatureAlgorithm.HS512, "secret_key").compact();
-		
-		logger.info("User ID:"+userId);
+
+		logger.info("User ID:" + userId);
 
 		response.addHeader("token", token);
 		response.addHeader("userId", userId);
