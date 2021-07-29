@@ -27,6 +27,8 @@ import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
 import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 import com.tushar.lms.user.service.UserService;
+import com.tushar.lms.user.utility.SMS;
+import com.tushar.lms.user.utility.SmsPublisher;
 
 @RestController
 @RequestMapping("/user")
@@ -34,6 +36,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private SmsPublisher smsPublisher;
 
 	@Value("${service.test}")
 	private String test;
@@ -85,5 +90,11 @@ public class UserController {
 		logger.info("Inside UserController ---------> addNewBook");
 		NewBookResponse bookResponse = userService.addNewBook(newBookRequest);
 		return new ResponseEntity<NewBookResponse>(bookResponse, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/sendSMS")
+	public ResponseEntity<String> sendSMS(@RequestBody SMS sms) {
+		smsPublisher.sendMessage(sms);
+		return new ResponseEntity<String>("SMS Sent", HttpStatus.OK);
 	}
 }
