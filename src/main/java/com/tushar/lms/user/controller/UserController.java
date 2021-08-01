@@ -46,7 +46,7 @@ public class UserController {
 	Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	@PostMapping("/add")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<NewUserResponse> addUser(@Valid @RequestBody NewUserRequest addNewUser) {
 		logger.info("Inside UserController ---------> addUser");
 		NewUserResponse newUser = userService.addNewUser(addNewUser);

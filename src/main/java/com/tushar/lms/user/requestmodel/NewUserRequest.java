@@ -12,7 +12,7 @@ public class NewUserRequest {
 	@Size(min = 6, message = "fullname at least has 6 characters")
 	private String fullname;
 	@NotEmpty(message = "address required")
-	@Size(min = 6, message = "fullname at least has 6 characters")
+	@Size(min = 6, message = "address at least has 6 characters")
 	private String address;
 	@NotEmpty(message = "email required")
 	@Email

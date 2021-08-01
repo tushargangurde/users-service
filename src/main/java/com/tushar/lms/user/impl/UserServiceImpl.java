@@ -27,6 +27,8 @@ import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
 import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
 import com.tushar.lms.user.service.UserService;
+import com.tushar.lms.user.utility.SMS;
+import com.tushar.lms.user.utility.SmsPublisher;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -43,6 +45,12 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private BookProxyServiceResilience bookProxyServiceResilience;
 
+	@Autowired
+	private SmsPublisher smsPublisher;
+
+	@Autowired
+	private SMS sms;
+
 	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Override
@@ -54,6 +62,11 @@ public class UserServiceImpl implements UserService {
 		UserEntity newUser = modelMapper.map(addNewUser, UserEntity.class);
 		newUser.setRole("ROLE_USER");
 		UserEntity savedUser = userRepository.save(newUser);
+		String msg = "User is registered successfully with User ID:" + savedUser.getUserId()
+				+ ". Please use your email as username to login.";
+		sms.setMessage(msg);
+		sms.setContactNo(savedUser.getContactNo());
+		smsPublisher.sendMessage(sms);
 		NewUserResponse returnUser = modelMapper.map(savedUser, NewUserResponse.class);
 		return returnUser;
 	}
