@@ -1,19 +1,11 @@
 package com.tushar.lms.user.responsemodel;
 
-public class NewBookResponse {
+public class GetBookResponse {
 
 	private String bookId;
 	private String bookName;
 	private String author;
 	private boolean available;
-
-	public boolean getAvailable() {
-		return available;
-	}
-
-	public void setAvailable(boolean available) {
-		this.available = available;
-	}
 
 	public String getBookId() {
 		return bookId;
@@ -37,6 +29,20 @@ public class NewBookResponse {
 
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+
+	public boolean getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
+
+	@Override
+	public String toString() {
+		return "GetBookResponse [bookId=" + bookId + ", bookName=" + bookName + ", author=" + author + ", available="
+				+ available + "]";
 	}
 
 }

@@ -15,12 +15,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tushar.lms.user.entity.UserBookRelation;
 import com.tushar.lms.user.entity.UserEntity;
+import com.tushar.lms.user.repository.UserBookRelationRepository;
 import com.tushar.lms.user.repository.UserRepository;
 import com.tushar.lms.user.requestmodel.NewBookRequest;
 import com.tushar.lms.user.requestmodel.NewUserRequest;
 import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.responsemodel.AllUsersListResponse;
+import com.tushar.lms.user.responsemodel.GetBookResponse;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.responsemodel.IssuedBookResponse;
 import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
@@ -44,6 +47,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private BookProxyServiceResilience bookProxyServiceResilience;
+
+	@Autowired
+	private UserBookRelationRepository userBookRelationRepository;
 
 	@Autowired
 	private SmsPublisher smsPublisher;
@@ -91,10 +97,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public IssuedBooksForUserResponse getIssuedBooksForUser(String userId, String Authorization) {
+	public IssuedBooksForUserResponse getIssuedBooksForUser(String userId, String authorization) {
 		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<IssuedBookResponse> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId, Authorization).getBody();
+		List<IssuedBookResponse> bookDtos = bookProxyServiceResilience.getIssuedBooks(userId, authorization).getBody();
 		GetUserResponse user = getUser(userId);
 		IssuedBooksForUserResponse issuedBooksForUser = modelMapper.map(user, IssuedBooksForUserResponse.class);
 		issuedBooksForUser.setIssuedBookList(bookDtos);
@@ -133,5 +139,53 @@ public class UserServiceImpl implements UserService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		NewBookResponse response = bookProxyServiceResilience.addNewBook(newBookRequest).getBody();
 		return response;
+	}
+
+	@Override
+	public Boolean issueNewBook(String userId, String bookId, String authorization) {
+		Boolean result = false;
+		logger.info("Inside UserServiceImpl ---------> issueNewBook");
+		GetBookResponse response = bookProxyServiceResilience.getBook(bookId, authorization).getBody();
+		logger.info(response.toString());
+		if (!response.getAvailable() || response == null) {
+			return result;
+		} else {
+			UserBookRelation userBookRelation = userBookRelationRepository.findByUserId(userId);
+			if (userBookRelation == null) {
+				UserBookRelation newUser = new UserBookRelation();
+				newUser.setUserId(userId);
+				newUser.setBookCount(1);
+				UserBookRelation issueBookToUser = userBookRelationRepository.save(newUser);
+				logger.info("Book with " + bookId + " issued successfully to " + userId);
+				if (issueBookToUser != null) {
+					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, authorization).getBody();
+					if (flag) {
+						logger.info("Book status set to unavailable");
+					} else {
+						logger.info("Something went wrong while updating book status");
+					}
+				}
+				result = true;
+			} else if (userBookRelation.getBookCount() < 2) {
+				int count = userBookRelation.getBookCount();
+				userBookRelation.setBookCount(count + 1);
+				UserBookRelation issueBookToUser = userBookRelationRepository.save(userBookRelation);
+				logger.info("Book with " + bookId + " issued successfully to " + userId);
+				if (issueBookToUser != null) {
+					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, authorization).getBody();
+					if (flag) {
+						logger.info("Book status set to unavailable");
+					} else {
+						logger.info("Something went wrong while updating book status");
+					}
+				}
+				result = true;
+			} else {
+				logger.info("Already reached to maximum book limit. Can not issue more");
+				return result;
+			}
+		}
+
+		return result;
 	}
 }

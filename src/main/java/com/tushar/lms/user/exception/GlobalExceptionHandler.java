@@ -62,4 +62,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				exception.getMessage());
 		return new ResponseEntity<ApiErrorResponse>(apiErrorResponse, HttpStatus.UNAUTHORIZED);
 	}
+
+	@ExceptionHandler(BookNotFoundException.class)
+	public ResponseEntity<ApiErrorResponse> handleBookNotFoundException(Exception exception) {
+		logger.info("GlobalExceptionHandler --------------------> handleBookNotFoundException");
+		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.NOT_FOUND.value(), "Book Not found",
+				exception.getMessage());
+		return new ResponseEntity<ApiErrorResponse>(apiErrorResponse, HttpStatus.NOT_FOUND);
+	}
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tushar.lms.user.requestmodel.NewUserRequest;
@@ -77,8 +78,15 @@ public class UserController {
 		return new ResponseEntity<String>(test, HttpStatus.OK);
 	}
 
-	public ResponseEntity<?> issueNewBook() {
-		return null;
+	@PostMapping("/issueNewBook")
+	public ResponseEntity<String> issueNewBook(@RequestParam String userId, @RequestParam String bookId,
+			@RequestHeader String Authorization) {
+		logger.info("Inside UserController ---------> issueNewBook");
+		Boolean result = userService.issueNewBook(userId, bookId, Authorization);
+		if (result)
+			return new ResponseEntity<String>("Book issued", HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("Book not issued", HttpStatus.NOT_ACCEPTABLE);
 	}
 
 }

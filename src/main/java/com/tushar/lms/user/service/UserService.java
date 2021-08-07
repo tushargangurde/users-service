@@ -26,4 +26,6 @@ public interface UserService extends UserDetailsService {
 
 	NewBookResponse addNewBook(NewBookRequest newBookRequest);
 
+	Boolean issueNewBook(String userId, String bookId, String authorization);
+
 }

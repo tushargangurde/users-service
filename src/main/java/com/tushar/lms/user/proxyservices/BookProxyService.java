@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tushar.lms.user.requestmodel.NewBookRequest;
+import com.tushar.lms.user.responsemodel.GetBookResponse;
 import com.tushar.lms.user.responsemodel.IssuedBookResponse;
 import com.tushar.lms.user.responsemodel.NewBookResponse;
 
@@ -22,5 +23,11 @@ public interface BookProxyService {
 
 	@PostMapping("/add")
 	public ResponseEntity<NewBookResponse> addNewBook(NewBookRequest newBookRequest);
+
+	@GetMapping("/{bookId}")
+	public ResponseEntity<GetBookResponse> getBook(@PathVariable String bookId, @RequestHeader String Authorization);
+
+	@PostMapping("/setAvailableStatus/{bookId}")
+	public ResponseEntity<Boolean> setAvailableStatus(@PathVariable String bookId, @RequestHeader String Authorization);
 
 }
