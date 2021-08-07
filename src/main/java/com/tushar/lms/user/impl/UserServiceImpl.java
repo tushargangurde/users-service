@@ -148,7 +148,6 @@ public class UserServiceImpl implements UserService {
 		Boolean result = false;
 		logger.info("Inside UserServiceImpl ---------> issueNewBook");
 		GetBookResponse response = bookProxyServiceResilience.getBook(bookId, authorization).getBody();
-		logger.info(response.toString());
 		if (!response.getAvailable() || response == null) {
 			return result;
 		} else {
@@ -168,12 +167,12 @@ public class UserServiceImpl implements UserService {
 						sms.setMessage(msg);
 						sms.setContactNo(getUser(userId).getContactNo());
 						smsPublisher.sendMessage(sms);
+						result = true;
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
 				}
-				result = true;
-			} else if (userBookRelation.getBookCount() < 2) {
+			} else if (userBookRelation.getBookCount() < 2 && userBookRelation.getBookCount() > -1) {
 				int count = userBookRelation.getBookCount();
 				userBookRelation.setBookCount(count + 1);
 				UserBookRelation issueBookToUser = userBookRelationRepository.save(userBookRelation);
@@ -187,11 +186,11 @@ public class UserServiceImpl implements UserService {
 						sms.setMessage(msg);
 						sms.setContactNo(getUser(userId).getContactNo());
 						smsPublisher.sendMessage(sms);
+						result = true;
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
 				}
-				result = true;
 			} else {
 				logger.info("Already reached to maximum book limit. Can not issue more book");
 				return result;
@@ -199,5 +198,43 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return result;
+	}
+
+	@Override
+	@Transactional
+	public Boolean returnBook(String userId, String bookId, String authorization) {
+		Boolean status = false;
+		logger.info("Inside UserServiceImpl ---------> returnBook");
+		GetBookResponse response = bookProxyServiceResilience.getBook(bookId, authorization).getBody();
+		if (response.getAvailable() || response == null) {
+			return status;
+		} else {
+			UserBookRelation userBookRelation = userBookRelationRepository.findByUserId(userId);
+			if (userBookRelation.getBookCount() != 0) {
+				if (userBookRelation.getBookCount() <= 2 && userBookRelation.getBookCount() > -1) {
+					userBookRelation.setBookCount((userBookRelation.getBookCount() - 1));
+					UserBookRelation returnedBook = userBookRelationRepository.save(userBookRelation);
+					if (returnedBook != null) {
+						Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, userId, authorization)
+								.getBody();
+						if (flag) {
+							logger.info("Book status set to available");
+							logger.info("Book with Book ID " + bookId + " returned successfully by User ID " + userId);
+							String msg = "Book with Book ID " + bookId + " returned successfully by User ID " + userId;
+							sms.setMessage(msg);
+							sms.setContactNo(getUser(userId).getContactNo());
+							smsPublisher.sendMessage(sms);
+							status = true;
+						} else {
+							logger.info("Something went wrong while updating book status");
+						}
+					}
+				}
+			} else {
+				logger.info("You don't have any book to return");
+				return status;
+			}
+		}
+		return status;
 	}
 }

@@ -28,4 +28,6 @@ public interface UserService extends UserDetailsService {
 
 	Boolean issueNewBook(String userId, String bookId, String authorization);
 
+	Boolean returnBook(String userId, String bookId, String authorization);
+
 }

@@ -79,6 +79,7 @@ public class UserController {
 	}
 
 	@PostMapping("/issueNewBook")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<String> issueNewBook(@RequestParam String userId, @RequestParam String bookId,
 			@RequestHeader String Authorization) {
 		logger.info("Inside UserController ---------> issueNewBook");
@@ -87,6 +88,18 @@ public class UserController {
 			return new ResponseEntity<String>("Book issued", HttpStatus.OK);
 		else
 			return new ResponseEntity<String>("Book not issued", HttpStatus.NOT_ACCEPTABLE);
+	}
+
+	@PostMapping("/returnBook")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<String> returnBook(@RequestParam String userId, @RequestParam String bookId,
+			@RequestHeader String Authorization) {
+		logger.info("Inside UserController ---------> returnBook");
+		Boolean status = userService.returnBook(userId, bookId, Authorization);
+		if (status)
+			return new ResponseEntity<String>("Book retuned", HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("Book not returned", HttpStatus.NOT_ACCEPTABLE);
 	}
 
 }
