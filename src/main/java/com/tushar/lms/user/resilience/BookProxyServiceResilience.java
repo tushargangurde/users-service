@@ -61,13 +61,14 @@ public class BookProxyServiceResilience {
 	}
 
 	@CircuitBreaker(name = "books-service", fallbackMethod = "fallbackSetAvailableStatus")
-	public ResponseEntity<Boolean> setAvailableStatus(String bookId, String authorization) {
+	public ResponseEntity<Boolean> setAvailableStatus(String bookId, String userId, String authorization) {
 		logger.info("Inside BookProxyServiceResilience ---------> setAvailableStatus");
 		logger.info("Calling bookProxyService.setAvailableStatus");
-		return bookProxyService.setAvailableStatus(bookId, authorization);
+		return bookProxyService.setAvailableStatus(bookId, userId, authorization);
 	}
 
-	public ResponseEntity<Boolean> fallbackSetAvailableStatus(String bookId, String Authorization, Throwable th) {
+	public ResponseEntity<Boolean> fallbackSetAvailableStatus(String bookId, String userId, String Authorization,
+			Throwable th) {
 		logger.info("Inside BookProxyServiceResilience ---------> fallbackSetAvailableStatus");
 		logger.error("Error:" + th.getMessage());
 		return new ResponseEntity<Boolean>(false, HttpStatus.NOT_MODIFIED);

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tushar.lms.user.entity.UserBookRelation;
 import com.tushar.lms.user.entity.UserEntity;
@@ -142,6 +143,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean issueNewBook(String userId, String bookId, String authorization) {
 		Boolean result = false;
 		logger.info("Inside UserServiceImpl ---------> issueNewBook");
@@ -156,11 +158,16 @@ public class UserServiceImpl implements UserService {
 				newUser.setUserId(userId);
 				newUser.setBookCount(1);
 				UserBookRelation issueBookToUser = userBookRelationRepository.save(newUser);
-				logger.info("Book with " + bookId + " issued successfully to " + userId);
 				if (issueBookToUser != null) {
-					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, authorization).getBody();
+					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, userId, authorization)
+							.getBody();
 					if (flag) {
 						logger.info("Book status set to unavailable");
+						logger.info("Book with " + bookId + " issued successfully to " + userId);
+						String msg = "Book with " + bookId + " issued successfully to " + userId;
+						sms.setMessage(msg);
+						sms.setContactNo(getUser(userId).getContactNo());
+						smsPublisher.sendMessage(sms);
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
@@ -170,18 +177,23 @@ public class UserServiceImpl implements UserService {
 				int count = userBookRelation.getBookCount();
 				userBookRelation.setBookCount(count + 1);
 				UserBookRelation issueBookToUser = userBookRelationRepository.save(userBookRelation);
-				logger.info("Book with " + bookId + " issued successfully to " + userId);
 				if (issueBookToUser != null) {
-					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, authorization).getBody();
+					Boolean flag = bookProxyServiceResilience.setAvailableStatus(bookId, userId, authorization)
+							.getBody();
 					if (flag) {
 						logger.info("Book status set to unavailable");
+						logger.info("Book with " + bookId + " issued successfully to " + userId);
+						String msg = "Book with " + bookId + " issued successfully to " + userId;
+						sms.setMessage(msg);
+						sms.setContactNo(getUser(userId).getContactNo());
+						smsPublisher.sendMessage(sms);
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
 				}
 				result = true;
 			} else {
-				logger.info("Already reached to maximum book limit. Can not issue more");
+				logger.info("Already reached to maximum book limit. Can not issue more book");
 				return result;
 			}
 		}

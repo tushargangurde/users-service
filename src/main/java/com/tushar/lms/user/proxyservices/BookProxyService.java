@@ -27,7 +27,8 @@ public interface BookProxyService {
 	@GetMapping("/{bookId}")
 	public ResponseEntity<GetBookResponse> getBook(@PathVariable String bookId, @RequestHeader String Authorization);
 
-	@PostMapping("/setAvailableStatus/{bookId}")
-	public ResponseEntity<Boolean> setAvailableStatus(@PathVariable String bookId, @RequestHeader String Authorization);
+	@PostMapping("/setAvailableStatus/{bookId}/{userId}")
+	public ResponseEntity<Boolean> setAvailableStatus(@PathVariable String bookId, @PathVariable String userId,
+			@RequestHeader String Authorization);
 
 }
