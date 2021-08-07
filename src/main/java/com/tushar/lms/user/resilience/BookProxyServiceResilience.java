@@ -11,10 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tushar.lms.user.proxyservices.BookProxyService;
-import com.tushar.lms.user.requestmodel.NewBookRequest;
 import com.tushar.lms.user.responsemodel.GetBookResponse;
 import com.tushar.lms.user.responsemodel.IssuedBookResponse;
-import com.tushar.lms.user.responsemodel.NewBookResponse;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
@@ -39,11 +37,6 @@ public class BookProxyServiceResilience {
 		logger.error("Error:" + th.getMessage());
 		List<IssuedBookResponse> bookDtos = new ArrayList<>();
 		return new ResponseEntity<List<IssuedBookResponse>>(bookDtos, HttpStatus.BAD_GATEWAY);
-	}
-
-	public ResponseEntity<NewBookResponse> addNewBook(NewBookRequest newBookRequest) {
-		logger.info("Inside BookProxyServiceResilience ---------> addNewBook");
-		return bookProxyService.addNewBook(newBookRequest);
 	}
 
 	@CircuitBreaker(name = "books-service", fallbackMethod = "fallbackGetBook")

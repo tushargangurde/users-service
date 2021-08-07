@@ -20,7 +20,6 @@ import com.tushar.lms.user.entity.UserBookRelation;
 import com.tushar.lms.user.entity.UserEntity;
 import com.tushar.lms.user.repository.UserBookRelationRepository;
 import com.tushar.lms.user.repository.UserRepository;
-import com.tushar.lms.user.requestmodel.NewBookRequest;
 import com.tushar.lms.user.requestmodel.NewUserRequest;
 import com.tushar.lms.user.resilience.BookProxyServiceResilience;
 import com.tushar.lms.user.responsemodel.AllUsersListResponse;
@@ -28,7 +27,6 @@ import com.tushar.lms.user.responsemodel.GetBookResponse;
 import com.tushar.lms.user.responsemodel.GetUserResponse;
 import com.tushar.lms.user.responsemodel.IssuedBookResponse;
 import com.tushar.lms.user.responsemodel.IssuedBooksForUserResponse;
-import com.tushar.lms.user.responsemodel.NewBookResponse;
 import com.tushar.lms.user.responsemodel.NewUserResponse;
 import com.tushar.lms.user.service.UserService;
 import com.tushar.lms.user.utility.SMS;
@@ -112,10 +110,8 @@ public class UserServiceImpl implements UserService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		logger.info("Inside UserServiceImpl ---------> loadUserByUsername");
 		Optional<UserEntity> userEntity = userRepository.findByEmail(username);
-
 		if (userEntity.isEmpty())
 			throw new UsernameNotFoundException("User not available " + username);
-
 		return new CustomUserDetails(userEntity.get());
 
 	}
@@ -124,32 +120,21 @@ public class UserServiceImpl implements UserService {
 	public GetUserResponse getUserDetailsByEmail(String email) {
 		logger.info("Inside UserServiceImpl ---------> getUserDetailsByEmail");
 		Optional<UserEntity> userEntity = userRepository.findByEmail(email);
-
 		if (userEntity.isEmpty())
 			throw new UsernameNotFoundException("User not available " + email);
-
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		GetUserResponse getUserResponse = modelMapper.map(userEntity.get(), GetUserResponse.class);
-
 		return getUserResponse;
-	}
-
-	@Override
-	public NewBookResponse addNewBook(NewBookRequest newBookRequest) {
-		logger.info("Inside UserServiceImpl ---------> getIssuedBooksForUser");
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		NewBookResponse response = bookProxyServiceResilience.addNewBook(newBookRequest).getBody();
-		return response;
 	}
 
 	@Override
 	@Transactional
 	public Boolean issueNewBook(String userId, String bookId, String authorization) {
-		Boolean result = false;
+		Boolean status = false;
 		logger.info("Inside UserServiceImpl ---------> issueNewBook");
 		GetBookResponse response = bookProxyServiceResilience.getBook(bookId, authorization).getBody();
 		if (!response.getAvailable() || response == null) {
-			return result;
+			return status;
 		} else {
 			UserBookRelation userBookRelation = userBookRelationRepository.findByUserId(userId);
 			if (userBookRelation == null) {
@@ -167,7 +152,7 @@ public class UserServiceImpl implements UserService {
 						sms.setMessage(msg);
 						sms.setContactNo(getUser(userId).getContactNo());
 						smsPublisher.sendMessage(sms);
-						result = true;
+						status = true;
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
@@ -186,18 +171,17 @@ public class UserServiceImpl implements UserService {
 						sms.setMessage(msg);
 						sms.setContactNo(getUser(userId).getContactNo());
 						smsPublisher.sendMessage(sms);
-						result = true;
+						status = true;
 					} else {
 						logger.info("Something went wrong while updating book status");
 					}
 				}
 			} else {
 				logger.info("Already reached to maximum book limit. Can not issue more book");
-				return result;
+				return status;
 			}
 		}
-
-		return result;
+		return status;
 	}
 
 	@Override
